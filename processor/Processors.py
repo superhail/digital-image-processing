@@ -20,10 +20,12 @@ class ImageProcessor:
         self.background = list(background)
         self.confirm = False
         self.cancel = False
+        self.process_initialized = False
 
         # image processing tools
         self.mover = Mover()
         self.cropper = Cropper()
+        self.rotater = Rotater()
 
     def if_refresh(self):
         return self.REFRESH
@@ -46,6 +48,7 @@ class ImageProcessor:
                      self.surface.get_height() // 2 - rect.center[1])
                 self.REFRESH = True
                 self.PROCESS = False
+                self.tool_name = None
             elif self.tool_name == "move":
                 self.mover.process(self, event)
             elif self.tool_name == "crop":
@@ -53,11 +56,12 @@ class ImageProcessor:
             elif self.tool_name == "save":
                 self.REFRESH = True
                 self.PROCESS = False
+            elif self.tool_name == "rotate":
+                self.rotater.process(self, event)
 
     def set_process(self, tool_name: str):
         self.draw()
-        if tool_name == "crop":
-            self.cropper.initialized = False
+        self.process_initialized = False
         self.tool_name = tool_name
         self.PROCESS = True
 

@@ -17,7 +17,7 @@ def main(args):
     pygame.init()
     screen = pygame.display.set_mode(size, pygame.SRCALPHA)
     image_canvas = pygame.Surface(canvas_size, pygame.SRCALPHA)
-    image_canvas.fill([80, 80, 80])
+    image_canvas.fill([80, 80, 80, 255])
     image_up_canvas = pygame.Surface(canvas_size, pygame.SRCALPHA)
     image_up_canvas.fill([80, 80, 80, 0])
     processor = ImageProcessor(image_canvas, image_up_canvas, canvas_offset)

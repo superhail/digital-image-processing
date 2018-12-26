@@ -7,18 +7,17 @@ import numpy as np
 class Cropper(BaseTool):
     def __init__(self):
         super().__init__()
-        self.initialized = False
         self.pressed = None
         self.outline = None
         self.marker = (8, 8)
 
     def process(self, processor, event: pygame.event):
-        if not self.initialized:
+        if not processor.process_initialized:
             rect = processor.focus.surface.get_rect()
             size = [rect[2], rect[3]]
             self.outline = pygame.Rect(list(processor.focus.offset) + size)
             self.draw_outline(processor)
-            self.initialized = True
+            processor.process_initialized = True
         if processor.confirm:
             focus = processor.focus
             raw_topleft = focus.raw_pos(self.outline.topleft)
@@ -30,10 +29,15 @@ class Cropper(BaseTool):
             focus.construct_surface()
             processor.REFRESH = True
             processor.PROCESS = False
-            self.initialized = False
+            processor.process_initialized = False
             self.pressed = None
         if processor.cancel:
-            print("cancel")
+            focus = processor.focus
+            focus.construct_surface()
+            processor.REFRESH = True
+            processor.PROCESS = False
+            processor.process_initialized = False
+            self.pressed = None
         if event.type == pygame.MOUSEBUTTONDOWN:
             event_rpos = processor.get_offset_pos(event.pos)
             topleft_rect = util.centered_rect(self.outline.topleft, self.marker)
