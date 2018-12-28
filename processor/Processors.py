@@ -26,6 +26,7 @@ class ImageProcessor:
         self.mover = Mover()
         self.cropper = Cropper()
         self.rotater = Rotater()
+        self.resizer = Resizer()
 
     def if_refresh(self):
         return self.REFRESH
@@ -58,6 +59,8 @@ class ImageProcessor:
                 self.PROCESS = False
             elif self.tool_name == "rotate":
                 self.rotater.process(self, event)
+            elif self.tool_name == "resize":
+                self.resizer.process(self, event)
 
     def set_process(self, tool_name: str):
         self.draw()
