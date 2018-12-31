@@ -35,9 +35,13 @@ The views and conclusions contained in the software and documentation are those 
 authors and should not be interpreted as representing official policies, either expressed
 or implied, of Al Sweigart.
 """
+from functools import reduce
+
+import util
 import pygame
+import numpy as np
 from pygame.locals import *
-from threading import Thread
+import pygame.surfarray as surfarray
 
 pygame.font.init()
 PYGBUTTON_FONT = pygame.font.Font('freesansbold.ttf', 14)
@@ -58,11 +62,13 @@ class Register:
 
     def handleEvent(self, event):
         for element in self.element_dict.values():
-            retVal = element.handleEvent(event)
+            if element.visible:
+                retVal = element.handleEvent(event)
 
     def draw(self, screenObj):
         for element in self.element_dict.values():
-            element.draw(screenObj)
+            if element.visible:
+                element.draw(screenObj)
 
     def set_invisible(self, name):
         self.element_dict[name].visible = False
@@ -85,16 +91,194 @@ class ButtonBar:
         return self.size
 
 
+class ExclusiveSelection:
+    def __init__(self, processor, pos, color):
+        self.processor = processor
+        self.selection = 0
+        self.selection_list = []
+        self.rect_list = []
+        self.pos = pos
+        self.color = color
+        self.surface = None
+        self.visible = False
+        self.font = pygame.font.Font(None, 20)
+
+    def draw(self, screenObj):
+        self.surface.fill(self.color)
+        for index, selection in enumerate(self.selection_list):
+            if index == self.selection:
+                sunken_color = np.subtract(self.color, 20)
+                pygame.draw.rect(self.surface, sunken_color, self.rect_list[index])
+                text = self.font.render(selection, True, (0, 0, 0))
+                rect = text.get_rect()
+                rect.center = self.rect_list[index].center
+                self.surface.blit(text, rect.topleft)
+            else:
+                pygame.draw.rect(self.surface, self.color, self.rect_list[index])
+                text = self.font.render(selection, True, (0, 0, 0))
+                rect = text.get_rect()
+                rect.center = self.rect_list[index].center
+                self.surface.blit(text, rect.topleft)
+        screenObj.blit(self.surface, self.pos)
+
+    def handleEvent(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            event_rpos = np.subtract(event.pos, self.pos)
+            for index, rect in enumerate(self.rect_list):
+                if rect.collidepoint(event_rpos[0], event_rpos[1]):
+                    self.selection = index
+                    self.processor.selection = self.selection
+
+    def contruct_selection(self, selection_list):
+        self.selection_list = selection_list
+        self.rect_list.clear()
+        self.selection = 0
+        for index, selection in enumerate(self.selection_list):
+            rect = pygame.Rect((110 * index, 0), (100, 38))
+            self.rect_list.append(rect)
+        self.surface = pygame.Surface((110 * len(selection_list) - 10, 38), pygame.SRCALPHA)
+        self.visible = True
+        self.processor.selection = 0
+
+
+class MultipleSelection:
+    def __init__(self, processor, pos, color):
+        self.processor = processor
+        self.selections = []
+        self.selection_list = []
+        self.rect_list = []
+        self.pos = pos
+        self.color = color
+        self.surface = None
+        self.visible = False
+        self.font = pygame.font.Font(None, 20)
+
+    def draw(self, screenObj):
+        self.surface.fill(self.color)
+        for index, selection in enumerate(self.selection_list):
+            if self.selections[index]:
+                sunken_color = np.subtract(self.color, 20)
+                pygame.draw.rect(self.surface, sunken_color, self.rect_list[index])
+                text = self.font.render(selection, True, (0, 0, 0))
+                rect = text.get_rect()
+                rect.center = self.rect_list[index].center
+                self.surface.blit(text, rect.topleft)
+            else:
+                pygame.draw.rect(self.surface, self.color, self.rect_list[index])
+                text = self.font.render(selection, True, (0, 0, 0))
+                rect = text.get_rect()
+                rect.center = self.rect_list[index].center
+                self.surface.blit(text, rect.topleft)
+        screenObj.blit(self.surface, self.pos)
+
+    def handleEvent(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            event_rpos = np.subtract(event.pos, self.pos)
+            for index, rect in enumerate(self.rect_list):
+                if rect.collidepoint(event_rpos[0], event_rpos[1]):
+                    if np.sum(self.selections) > 1:
+                        self.selections[index] = False if self.selections[index] else True
+                    else:
+                        self.selections[index] = True
+                    self.processor.selection = reduce(lambda x, y: 2*x + y, self.selections, 0)
+
+    def contruct_selection(self, selection_list):
+        self.selection_list = selection_list
+        self.rect_list.clear()
+        self.selections.clear()
+        for index, selection in enumerate(self.selection_list):
+            rect = pygame.Rect((110 * index, 0), (100, 38))
+            self.rect_list.append(rect)
+            self.selections.append(False)
+        self.selections[0] = True
+        self.surface = pygame.Surface((110 * len(selection_list) - 10, 38), pygame.SRCALPHA)
+        self.visible = True
+        self.processor.selection = 0
+
+
 class FocusButtonBar:
     def __init__(self, processor, color, pos, size):
         self.processor = processor
         self.size = size
         self.pos = pos
         self.color = color
+        self.imageList = []
+        self.confirm_buttonList = []
+        self.cancel_buttonList = []
+        self.id = 0
+        self.focus = None
+        self.surface = pygame.Surface(size, pygame.SRCALPHA)
+        self.surface.fill(color=color)
 
     def draw(self, screenObj):
-        screenObj.fill(self.color, self.pos+self.size)
+        self.surface.fill((80, 80, 80))
+        for index, thumb in enumerate(self.imageList):
+            if self.focus == index:
+                rect = pygame.Rect((0, index * 50), (150, 50))
+                pygame.draw.rect(self.surface, (50, 50, 50), rect)
+            self.surface.blit(thumb, (6, index * 50 + 6))
+            rect = pygame.Rect((3, index*50+3), (144, 44))
+            util.draw_rect_line(self.surface, (60, 60, 60), rect)
+        screenObj.blit(self.surface, self.pos)
+        for conf, canc in zip(self.confirm_buttonList, self.cancel_buttonList):
+            id = self.confirm_buttonList.index(conf)
+            conf.rect = pygame.Rect(np.add(self.pos, (56, 6 + id * 50)), (38, 38))
+            canc.rect = pygame.Rect(np.add(self.pos, (106, 6 + id * 50)), (38, 38))
+            conf.draw(screenObj)
+            canc.draw(screenObj)
 
+    def handleEvent(self, event):
+        for conf, canc in zip(self.confirm_buttonList, self.cancel_buttonList):
+            conf.handleEvent(event)
+            canc.handleEvent(event)
+
+    def addImage(self, im):
+        surf = surfarray.make_surface(im.raw_data[:, :, :3])
+        thumbnail = pygame.transform.scale(surf, (38, 38))
+        self.imageList.append(thumbnail)
+        button_offset = np.add(self.pos, (56, 6 + self.id * 50))
+        rect = pygame.Rect(button_offset, (38, 38))
+        button_confirm = PygButton(rect,
+                                   bgcolor=[80, 80, 80],
+                                   fgcolor=[30, 30, 30],
+                                   image_path="resources/icons/confirm.png")
+        def confirm_callback(event):
+            id = self.confirm_buttonList.index(button_confirm)
+            self.selectImage(id)
+        button_confirm.mouseClickCallback = confirm_callback
+        self.confirm_buttonList.append(button_confirm)
+        button_offset = np.add(self.pos, (106, 6 + self.id * 50))
+        rect = pygame.Rect(button_offset, (38, 38))
+        button_cancel = PygButton(rect,
+                                  bgcolor=[80, 80, 80],
+                                  fgcolor=[30, 30, 30],
+                                  image_path="resources/icons/cancel.png")
+        def cancel_callback(event):
+            id = self.cancel_buttonList.index(button_cancel)
+            self.deleteImage(id)
+        button_cancel.mouseClickCallback = cancel_callback
+        self.cancel_buttonList.append(button_cancel)
+        self.focus = self.id
+        self.id += 1
+
+    def selectImage(self, id):
+        self.processor.focus = self.processor.imagelist[id]
+        self.focus = id
+
+    def deleteImage(self, id):
+        im = self.processor.imagelist.pop(id)
+        self.cancel_buttonList.pop(id)
+        self.confirm_buttonList.pop(id)
+        self.imageList.pop(id)
+        if self.processor.focus == im:
+            if len(self.processor.imagelist) == 0:
+                self.processor.focus = None
+                self.focus = None
+            else:
+                index = (id + 1) % len(self.processor.imagelist)
+                self.processor.focus = self.processor.imagelist[index]
+                self.focus = index
+        self.processor.REFRESH = True
 
 
 class PygButton(object):

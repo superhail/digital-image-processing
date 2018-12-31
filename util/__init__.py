@@ -1,9 +1,9 @@
 import logging
 
-from util.buttons import Register
+from util.buttons import Register, MultipleSelection, ExclusiveSelection
 from processor.Processors import ImageProcessor
 from processor.ProcessingImage import ImageToProcess
-from util.buttons import PygButton
+from util.buttons import PygButton, FocusButtonBar
 import tkinter
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 import numpy as np
@@ -35,8 +35,20 @@ def centered_rect(pos, size):
 # initialize pygame buttons
 def button_initialize(button_register: Register,
                       processor: ImageProcessor,
+                      imFocus: FocusButtonBar,
                       args):
     temp_button_register = Register()
+
+    # Exclusive selection
+    exclusive_selection = ExclusiveSelection(processor=processor, pos=(800, 1), color=[60, 60, 60])
+    button_register.register("exclusive", exclusive_selection)
+    temp_button_register.register("exclusive", exclusive_selection)
+
+    # Multiple selection
+    multiple_selection = MultipleSelection(processor=processor, pos=(800, 1), color=[60, 60, 60])
+    button_register.register("multiple", multiple_selection)
+    temp_button_register.register("multiple", multiple_selection)
+
     # confirm button
     button_confirm = PygButton((502, 2, 38, 38),
                                bgcolor=[80, 80, 80],
@@ -121,6 +133,117 @@ def button_initialize(button_register: Register,
     button_resize.mouseClickCallback = button_resize_callback
     button_register.register("resize", button_resize)
 
+    # text button
+    button_text = PygButton((1, 207, 38, 38),
+                              bgcolor=[80, 80, 80],
+                              fgcolor=[30, 30, 30],
+                              image_path="resources/icons/text.png")
+    def button_text_callback(event):
+        temp_button_register.set_all_invisible()
+        processor.cancel = False
+        processor.confirm = False
+        button_cancel.visible = True
+        button_confirm.visible = True
+        processor.set_process("text")
+    button_text.mouseClickCallback = button_text_callback
+    button_register.register("text", button_text)
+
+    # reverse button
+    button_reverse = PygButton((1, 247, 38, 38),
+                               bgcolor=[80, 80, 80],
+                               fgcolor=[30, 30, 30],
+                               image_path="resources/icons/reverse.png")
+    def button_reverse_callback(event):
+        temp_button_register.set_all_invisible()
+        processor.set_process("reverse")
+    button_reverse.mouseClickCallback = button_reverse_callback
+    button_register.register("reverse", button_reverse)
+
+    # hist button
+    button_hist = PygButton((1, 287, 38, 38),
+                            bgcolor=[80, 80, 80],
+                            fgcolor=[30, 30, 30],
+                            image_path="resources/icons/histogram.png")
+    def button_hist_callback(event):
+        temp_button_register.set_all_invisible()
+        exclusive_selection.visible = True
+        exclusive_selection.contruct_selection(["equalization", "linear", "unlinear"])
+        processor.cancel = False
+        processor.confirm = False
+        button_cancel.visible = True
+        button_confirm.visible = True
+        processor.set_process("hist")
+    button_hist.mouseClickCallback = button_hist_callback
+    button_register.register("hist", button_hist)
+
+    # color button
+    button_color = PygButton((1, 327, 38, 38),
+                            bgcolor=[80, 80, 80],
+                            fgcolor=[30, 30, 30],
+                            image_path="resources/icons/colorspace.png")
+    def button_color_callback(event):
+        temp_button_register.set_all_invisible()
+        exclusive_selection.visible = True
+        exclusive_selection.contruct_selection(["HSV", "YCbCr", "LAB"])
+        processor.cancel = False
+        processor.confirm = False
+        button_cancel.visible = True
+        button_confirm.visible = True
+        processor.set_process("color")
+    button_color.mouseClickCallback = button_color_callback
+    button_register.register("color", button_color)
+
+    # blur button
+    button_blur = PygButton((1, 367, 38, 38),
+                             bgcolor=[80, 80, 80],
+                             fgcolor=[30, 30, 30],
+                             image_path="resources/icons/blur.png")
+    def button_blur_callback(event):
+        temp_button_register.set_all_invisible()
+        exclusive_selection.visible = True
+        exclusive_selection.contruct_selection(["average", "gaussian", "median"])
+        processor.cancel = False
+        processor.confirm = False
+        button_cancel.visible = True
+        button_confirm.visible = True
+        processor.set_process("blur")
+    button_blur.mouseClickCallback = button_blur_callback
+    button_register.register("blur", button_blur)
+
+    # sharpen button
+    button_sharpen = PygButton((1, 407, 38, 38),
+                             bgcolor=[80, 80, 80],
+                             fgcolor=[30, 30, 30],
+                             image_path="resources/icons/sharpen.png")
+    def button_sharpen_callback(event):
+        temp_button_register.set_all_invisible()
+        exclusive_selection.visible = True
+        exclusive_selection.contruct_selection(["sobel", "laplacian"])
+        processor.cancel = False
+        processor.confirm = False
+        button_cancel.visible = True
+        button_confirm.visible = True
+        processor.set_process("sharpen")
+    button_sharpen.mouseClickCallback = button_sharpen_callback
+    button_register.register("sharpen", button_sharpen)
+
+    # transform button
+    button_transform = PygButton((1, 447, 38, 38),
+                               bgcolor=[80, 80, 80],
+                               fgcolor=[30, 30, 30],
+                               image_path="resources/icons/transform.png")
+    def button_transform_callback(event):
+        temp_button_register.set_all_invisible()
+        exclusive_selection.visible = True
+        exclusive_selection.contruct_selection(["FFT", "DCT"])
+        processor.cancel = False
+        processor.confirm = False
+        button_cancel.visible = True
+        button_confirm.visible = True
+        processor.set_process("transform")
+    button_transform.mouseClickCallback = button_transform_callback
+    button_register.register("transform", button_transform)
+
     # file button
     button_file = PygButton((2, 2, 50, 38),
                             caption="File",
@@ -128,11 +251,9 @@ def button_initialize(button_register: Register,
                             fgcolor=[30, 30, 30],)
     def button_file_callback(event):
         temp_button_register.set_all_invisible()
-        button_cancel.visible = False
-        button_confirm.visible = False
-        # tkinter.Tk().withdraw()
-        # filename = askopenfilename(initialdir="./resources/images", title="Select files")
-        filename = "./resources/images/lena.jpg"
+        tkinter.Tk().withdraw()
+        filename = askopenfilename(initialdir="./resources/images", title="Select files")
+        # filename = "./resources/images/lena.jpg"
         if filename is not ():
             try:
                 im = Image.open(filename)
@@ -145,6 +266,7 @@ def button_initialize(button_register: Register,
                                           background=[80, 80, 80])
                 processor.set_image(imageObj)
                 processor.set_process("image_added")
+                imFocus.addImage(imageObj)
             except Exception as e:
                 logging.exception("File open failed")
     button_file.mouseClickCallback = button_file_callback
@@ -157,8 +279,6 @@ def button_initialize(button_register: Register,
                             fgcolor=[30, 30, 30],)
     def button_save_callback(event):
         temp_button_register.set_all_invisible()
-        button_cancel.visible = False
-        button_confirm.visible = False
         tkinter.Tk().withdraw()
         filename = asksaveasfilename(initialdir="./resources/saved",
                                      title="Select files",

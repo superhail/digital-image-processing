@@ -37,8 +37,8 @@ class Rotater(BaseTool):
             rect = pygame.Rect((0, 0), focus.view_shape)
             rect.center = self.reference
             focus.offset = rect.topleft
-            focus.construct_surface()
             # refresh variables
+            focus.construct_surface()
             focus.rotation = (focus.rotation + self.angle) % 360
             processor.REFRESH = True
             processor.PROCESS = False

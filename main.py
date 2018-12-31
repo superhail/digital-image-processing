@@ -1,7 +1,7 @@
 import sys
 import pygame
 import argparse
-from util.buttons import PygButton, Register, ButtonBar
+from util.buttons import PygButton, Register, ButtonBar, FocusButtonBar, MultipleSelection
 from util import button_initialize
 from processor.Processors import ImageProcessor
 
@@ -26,9 +26,15 @@ def main(args):
     up_button_bar = ButtonBar(color=[80, 80, 80], pos=(0, 0), size=(1280, 40))
     left_button_bar = ButtonBar(color=[80, 80, 80], pos=(0, 45), size=(40, 700))
 
+    # image thumbnail focus bar
+    im_focus_bar = FocusButtonBar(processor=processor, color=[80, 80, 80], pos=(1090, 100), size=(150, 600))
+
     # buttons
     button_register = Register()
-    button_initialize(button_register, processor, args)
+    button_initialize(button_register, processor, im_focus_bar, args)
+
+    # clock
+    clock = pygame.time.Clock()
 
     while 1:
         for event in pygame.event.get():
@@ -36,6 +42,7 @@ def main(args):
                 sys.exit()
 
             button_register.handleEvent(event)
+            im_focus_bar.handleEvent(event)
             if processor.if_process():
                 processor.process(event)
 
@@ -47,10 +54,14 @@ def main(args):
             processor.confirm = False
             button_register.element_dict["confirm"].visible = False
             button_register.element_dict["cancel"].visible = False
+            button_register.element_dict["multiple"].visible = False
+            button_register.element_dict["exclusive"].visible = False
         if processor.cancel:
             processor.confirm = False
             button_register.element_dict["confirm"].visible = False
             button_register.element_dict["cancel"].visible = False
+            button_register.element_dict["multiple"].visible = False
+            button_register.element_dict["exclusive"].visible = False
 
         # add object
         screen.fill(background)
@@ -60,8 +71,10 @@ def main(args):
         up_button_bar.draw(screen)
         left_button_bar.draw(screen)
         button_register.draw(screen)
+        im_focus_bar.draw(screen)
 
         pygame.display.update()
+        clock.tick(30)
 
 
 if __name__ == "__main__":
@@ -70,7 +83,7 @@ if __name__ == "__main__":
     parser.add_argument('--width', '-w', help='width', default=1280, type=int)
     parser.add_argument('--height', help='height', default=800, type=int)
     parser.add_argument('--background', '-b', help='background', default=[45, 45, 45], nargs=3, type=int)
-    parser.add_argument('--canvas_size', '-c', help='canvas size', default=[1000, 600], nargs=2, type=int)
+    parser.add_argument('--canvas_size', '-c', help='canvas size', default=[950, 600], nargs=2, type=int)
     parser.add_argument('--image_directory', '-d', help='image_directory', default="./resources/images", type=str)
     parser.add_argument('--view_shape', '-v', help='image view shape', default=[400, 300], nargs=2, type=int)
     args = parser.parse_args()

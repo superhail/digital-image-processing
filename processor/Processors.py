@@ -20,6 +20,7 @@ class ImageProcessor:
         self.background = list(background)
         self.confirm = False
         self.cancel = False
+        self.selection = 0
         self.process_initialized = False
 
         # image processing tools
@@ -27,6 +28,13 @@ class ImageProcessor:
         self.cropper = Cropper()
         self.rotater = Rotater()
         self.resizer = Resizer()
+        self.texter = Texter()
+        self.reverser = Reverser()
+        self.histogrammer = Histogrammer()
+        self.color = Color()
+        self.blur = Blur()
+        self.sharpen = Sharpen()
+        self.transform = Transform()
 
     def if_refresh(self):
         return self.REFRESH
@@ -37,7 +45,7 @@ class ImageProcessor:
     def draw(self):
         self.surface.fill(self.background)
         for image in self.imagelist:
-            self.surface.blit(self.focus.surface, self.focus.offset)
+            self.surface.blit(image.surface, image.offset)
         self.up_surface.fill(self.background+[0])
 
     def process(self, event: pygame.event):
@@ -61,6 +69,20 @@ class ImageProcessor:
                 self.rotater.process(self, event)
             elif self.tool_name == "resize":
                 self.resizer.process(self, event)
+            elif self.tool_name == "text":
+                self.texter.process(self, event)
+            elif self.tool_name == "reverse":
+                self.reverser.process(self, event)
+            elif self.tool_name == "hist":
+                self.histogrammer.process(self, event)
+            elif self.tool_name == "color":
+                self.color.process(self, event)
+            elif self.tool_name == "sharpen":
+                self.sharpen.process(self, event)
+            elif self.tool_name == "blur":
+                self.blur.process(self, event)
+            elif self.tool_name == "transform":
+                self.transform.process(self, event)
 
     def set_process(self, tool_name: str):
         self.draw()
