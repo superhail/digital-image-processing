@@ -9,6 +9,7 @@ from processor.tools.color import Color
 from processor.tools.blur import Blur
 from processor.tools.sharpen import Sharpen
 from processor.tools.transform import Transform
+from processor.tools.perspective import Perspective
 
 __all__ = ['Mover',
            'Cropper',
@@ -20,4 +21,5 @@ __all__ = ['Mover',
            'Color',
            'Blur',
            'Sharpen',
-           'Transform']
+           'Transform',
+           'Perspective']

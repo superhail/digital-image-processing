@@ -35,6 +35,7 @@ class ImageProcessor:
         self.blur = Blur()
         self.sharpen = Sharpen()
         self.transform = Transform()
+        self.perspective = Perspective()
 
     def if_refresh(self):
         return self.REFRESH
@@ -83,6 +84,8 @@ class ImageProcessor:
                 self.blur.process(self, event)
             elif self.tool_name == "transform":
                 self.transform.process(self, event)
+            elif self.tool_name == "perspective":
+                self.perspective.process(self, event)
 
     def set_process(self, tool_name: str):
         self.draw()

@@ -244,6 +244,21 @@ def button_initialize(button_register: Register,
     button_transform.mouseClickCallback = button_transform_callback
     button_register.register("transform", button_transform)
 
+    # perspective button
+    button_perspective = PygButton((1, 447, 38, 38),
+                                 bgcolor=[80, 80, 80],
+                                 fgcolor=[30, 30, 30],
+                                 image_path="resources/icons/perspective.png")
+    def button_perspective_callback(event):
+        temp_button_register.set_all_invisible()
+        processor.cancel = False
+        processor.confirm = False
+        button_cancel.visible = True
+        button_confirm.visible = True
+        processor.set_process("perspective")
+    button_perspective.mouseClickCallback = button_perspective_callback
+    button_register.register("perspective", button_perspective)
+
     # file button
     button_file = PygButton((2, 2, 50, 38),
                             caption="File",
