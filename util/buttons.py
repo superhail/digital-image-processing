@@ -53,6 +53,42 @@ GRAY      = (128, 128, 128)
 LIGHTGRAY = (212, 208, 200)
 
 
+class Input:
+    def __init__(self, pos, processor, size):
+        self.pos = pos
+        self.input_text = util.TextInput()
+        self.visible = False
+ #       self.font = pygame.font.Font()
+        self.processor = processor
+        self.bound = pygame.Rect(self.pos, size)
+
+    def draw(self, screenObj):
+        surface = self.input_text.get_surface()
+        util.draw_rect_line(screenObj,
+                            [255, 255, 255, 255],
+                            self.bound)
+        sur_rect = surface.get_rect()
+        sur_rect.center = self.bound.center
+        screenObj.blit(surface, sur_rect.topleft)
+
+    def handleEvent(self, event):
+        self.input_text.update([event])
+        surface = self.input_text.get_surface()
+        rect = pygame.Rect(self.pos, surface.get_size())
+        if not self.test_inside(rect, self.bound):
+            self.input_text.input_string = self.input_text.input_string[:-1]
+        self.processor.text = self.input_text.get_text()
+
+    def construct_text(self, text):
+        self.input_text = util.TextInput(initial_string=text, font_size=22)
+        self.visible = True
+
+    def test_inside(self, inner: pygame.Rect, outside: pygame.Rect):
+        return outside.collidepoint(inner.topleft[0], inner.topleft[1]) and \
+               outside.collidepoint(inner.topright[0], inner.topright[1]) and \
+               outside.collidepoint(inner.bottomleft[0], inner.bottomleft[1]) and \
+               outside.collidepoint(inner.bottomright[0], inner.bottomright[1])
+
 class Register:
     def __init__(self):
         self.element_dict = {}

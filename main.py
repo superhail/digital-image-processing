@@ -1,7 +1,7 @@
 import sys
 import pygame
 import argparse
-from util.buttons import PygButton, Register, ButtonBar, FocusButtonBar, MultipleSelection
+from util.buttons import PygButton, Register, ButtonBar, FocusButtonBar, MultipleSelection, Input
 from util import button_initialize
 from processor.Processors import ImageProcessor
 
@@ -56,12 +56,14 @@ def main(args):
             button_register.element_dict["cancel"].visible = False
             button_register.element_dict["multiple"].visible = False
             button_register.element_dict["exclusive"].visible = False
+            button_register.element_dict["input"].visible = False
         if processor.cancel:
             processor.confirm = False
             button_register.element_dict["confirm"].visible = False
             button_register.element_dict["cancel"].visible = False
             button_register.element_dict["multiple"].visible = False
             button_register.element_dict["exclusive"].visible = False
+            button_register.element_dict["input"].visible = False
 
         # add object
         screen.fill(background)

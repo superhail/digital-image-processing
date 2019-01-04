@@ -26,7 +26,7 @@ class Transform(BaseTool):
                 raw_data = focus.raw_data.copy()
                 gray = cv2.cvtColor(raw_data[:, :, :3], cv2.COLOR_RGB2GRAY)
                 dct = cv2.dct(np.float32(gray), flags=cv2.DFT_COMPLEX_OUTPUT)
-    #            dct_shift = fftpack.fftshift(dct)j2
+#                dct_shift = fftpack.fftshift(dct)
                 mag = 20*np.log(np.abs(dct))
                 plt.imshow(mag, cmap='gray')
                 plt.title("DCT")

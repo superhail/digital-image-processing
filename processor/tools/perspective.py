@@ -41,7 +41,6 @@ class Perspective(BaseTool):
             pts2 = np.array([(0, 0), (0, shape[0]), (shape[1], 0), (shape[1], shape[0])]).astype(np.float32)
             M = cv2.getPerspectiveTransform(pts1, pts2)
             dst = cv2.warpPerspective(raw_data, M, (shape[1], shape[0]))
-            print(dst.shape)
             focus.raw_data = dst
             focus.construct_surface()
             processor.REFRESH = True

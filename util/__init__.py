@@ -1,6 +1,6 @@
 import logging
-
-from util.buttons import Register, MultipleSelection, ExclusiveSelection
+from util.pygame_textinput import TextInput
+from util.buttons import Register, MultipleSelection, ExclusiveSelection, Input
 from processor.Processors import ImageProcessor
 from processor.ProcessingImage import ImageToProcess
 from util.buttons import PygButton, FocusButtonBar
@@ -38,6 +38,11 @@ def button_initialize(button_register: Register,
                       imFocus: FocusButtonBar,
                       args):
     temp_button_register = Register()
+
+    # Input box
+    input_box = Input((610, 12), processor, (100, 20))
+    temp_button_register.register("input", input_box)
+    button_register.register("input", input_box)
 
     # Exclusive selection
     exclusive_selection = ExclusiveSelection(processor=processor, pos=(800, 1), color=[60, 60, 60])
@@ -172,6 +177,8 @@ def button_initialize(button_register: Register,
         processor.confirm = False
         button_cancel.visible = True
         button_confirm.visible = True
+        input_box.visible = True
+        input_box.construct_text("1.0")
         processor.set_process("hist")
     button_hist.mouseClickCallback = button_hist_callback
     button_register.register("hist", button_hist)
@@ -184,7 +191,7 @@ def button_initialize(button_register: Register,
     def button_color_callback(event):
         temp_button_register.set_all_invisible()
         exclusive_selection.visible = True
-        exclusive_selection.contruct_selection(["HSV", "YCbCr", "LAB"])
+        exclusive_selection.contruct_selection(["YUV", "YCbCr", "LAB"])
         processor.cancel = False
         processor.confirm = False
         button_cancel.visible = True
@@ -245,7 +252,7 @@ def button_initialize(button_register: Register,
     button_register.register("transform", button_transform)
 
     # perspective button
-    button_perspective = PygButton((1, 447, 38, 38),
+    button_perspective = PygButton((1, 487, 38, 38),
                                  bgcolor=[80, 80, 80],
                                  fgcolor=[30, 30, 30],
                                  image_path="resources/icons/perspective.png")

@@ -12,6 +12,7 @@ class ImageProcessor:
         self.REFRESH = False
         self.PROCESS = False
         self.focus = None
+        self.text = ""
         self.imagelist = []
         self.up_surface = up_surface
         self.surface = surface
