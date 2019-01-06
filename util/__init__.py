@@ -266,6 +266,17 @@ def button_initialize(button_register: Register,
     button_perspective.mouseClickCallback = button_perspective_callback
     button_register.register("perspective", button_perspective)
 
+    # face button
+    button_face = PygButton((1, 527, 38, 38),
+                                   bgcolor=[80, 80, 80],
+                                   fgcolor=[30, 30, 30],
+                                   image_path="resources/icons/face.png")
+    def button_face_callback(event):
+        temp_button_register.set_all_invisible()
+        processor.set_process("face")
+    button_face.mouseClickCallback = button_face_callback
+    button_register.register("face", button_face)
+
     # file button
     button_file = PygButton((2, 2, 50, 38),
                             caption="File",

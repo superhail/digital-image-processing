@@ -37,6 +37,7 @@ class ImageProcessor:
         self.sharpen = Sharpen()
         self.transform = Transform()
         self.perspective = Perspective()
+        self.face = Face()
 
     def if_refresh(self):
         return self.REFRESH
@@ -87,6 +88,8 @@ class ImageProcessor:
                 self.transform.process(self, event)
             elif self.tool_name == "perspective":
                 self.perspective.process(self, event)
+            elif self.tool_name == "face":
+                self.face.process(self, event)
 
     def set_process(self, tool_name: str):
         self.draw()
