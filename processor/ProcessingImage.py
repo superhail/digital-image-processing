@@ -12,7 +12,9 @@ class ImageToProcess:
         self.view_data = raw_data
         self.ori_data = raw_data
         self.view_shape = view_shape
+        self.ori_view_shape = view_shape
         self.offset = (0, 0)
+        self.ori_offset = self.offset
         self.background = background
         self.surface = surface
         self.construct_surface()
@@ -52,6 +54,8 @@ class ImageToProcess:
 
     @raw_data.getter
     def raw_data(self):
+        self.ori_view_shape = self.view_shape
+        self.ori_offset = self.offset
         self.ori_data = self._raw_data
         return self._raw_data
 
