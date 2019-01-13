@@ -11,6 +11,8 @@ from processor.tools.sharpen import Sharpen
 from processor.tools.transform import Transform
 from processor.tools.perspective import Perspective
 from processor.tools.face import Face
+from processor.tools.motion_deblur import MotionDeblur
+from processor.tools.combine import Combine
 
 __all__ = ['Mover',
            'Cropper',
@@ -24,4 +26,6 @@ __all__ = ['Mover',
            'Sharpen',
            'Transform',
            'Perspective',
-           'Face']
+           'Face',
+           'MotionDeblur',
+           'Combine']

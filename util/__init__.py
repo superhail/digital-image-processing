@@ -277,6 +277,38 @@ def button_initialize(button_register: Register,
     button_face.mouseClickCallback = button_face_callback
     button_register.register("face", button_face)
 
+    # motion button
+    button_motion = PygButton((1, 567, 38, 38),
+                            bgcolor=[80, 80, 80],
+                            fgcolor=[30, 30, 30],
+                            image_path="resources/icons/motion.png")
+    def button_motion_callback(event):
+        temp_button_register.set_all_invisible()
+        processor.cancel = False
+        processor.confirm = False
+        button_cancel.visible = True
+        button_confirm.visible = True
+        input_box.visible = True
+        input_box.construct_text("17,0,70")
+        processor.set_process("motion")
+    button_motion.mouseClickCallback = button_motion_callback
+    button_register.register("motion", button_motion)
+
+    # jigsaw button
+    button_combine = PygButton((1, 607, 38, 38),
+                              bgcolor=[80, 80, 80],
+                              fgcolor=[30, 30, 30],
+                              image_path="resources/icons/jigsaw.png")
+    def button_combine_callback(event):
+        temp_button_register.set_all_invisible()
+        processor.cancel = False
+        processor.confirm = False
+        button_cancel.visible = True
+        button_confirm.visible = True
+        processor.set_process("combine")
+    button_combine.mouseClickCallback = button_combine_callback
+    button_register.register("combine", button_combine)
+
     # file button
     button_file = PygButton((2, 2, 50, 38),
                             caption="File",

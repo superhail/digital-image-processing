@@ -56,7 +56,7 @@ class ImageToProcess:
     def raw_data(self):
         self.ori_view_shape = self.view_shape
         self.ori_offset = self.offset
-        self.ori_data = self._raw_data
+        self.ori_data = self._raw_data.copy()
         return self._raw_data
 
     @raw_data.setter

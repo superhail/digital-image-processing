@@ -13,7 +13,7 @@ class Face(BaseTool):
 
     def process(self, processor, event: pygame.event):
         focus = processor.focus
-        raw_data = focus.raw_data.copy()
+        raw_data = focus.raw_data
         pixel_array = raw_data[:, :, :3]
         pixel_array = np.swapaxes(pixel_array, 0, 1)
         pixel_bgr = cv2.cvtColor(pixel_array, cv2.COLOR_RGB2BGR)

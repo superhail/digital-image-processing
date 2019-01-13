@@ -38,6 +38,8 @@ class ImageProcessor:
         self.transform = Transform()
         self.perspective = Perspective()
         self.face = Face()
+        self.motion = MotionDeblur()
+        self.combine = Combine(self.face.detector, self.face.predictor)
 
     def if_refresh(self):
         return self.REFRESH
@@ -90,6 +92,10 @@ class ImageProcessor:
                 self.perspective.process(self, event)
             elif self.tool_name == "face":
                 self.face.process(self, event)
+            elif self.tool_name == "motion":
+                self.motion.process(self, event)
+            elif self.tool_name == "combine":
+                self.combine.process(self, event)
 
     def set_process(self, tool_name: str):
         self.draw()
