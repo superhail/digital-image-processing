@@ -19,7 +19,7 @@ class MotionDeblur(BaseTool):
             LEN, THETA, SNR = np.int32(processor.text.split(","))
             gray = cv2.cvtColor(np.float32(raw_data), cv2.COLOR_RGB2GRAY)
             psf = self.cal_psf(gray.shape[:2], LEN, THETA)
-            wnr_filter = self.cal_wnr_filter(psf, 1.0 / 300)
+            wnr_filter = self.cal_wnr_filter(psf, 1.0 / SNR)
             im = [self.edgetaper(raw_data[:, :, channel], 5.0, 0.2) for channel in range(3)]
             out = [self.filter_2d_frequency(im[channel], wnr_filter) for channel in range(3)]
             out = cv2.merge([np.clip(out[channel], 0, 255) for channel in range(3)])
