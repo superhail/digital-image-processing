@@ -13,6 +13,7 @@ from processor.tools.perspective import Perspective
 from processor.tools.face import Face
 from processor.tools.motion_deblur import MotionDeblur
 from processor.tools.combine import Combine
+from processor.tools.snitch import Snitch
 
 __all__ = ['Mover',
            'Cropper',
@@ -28,4 +29,5 @@ __all__ = ['Mover',
            'Perspective',
            'Face',
            'MotionDeblur',
-           'Combine']
+           'Combine',
+           'Snitch']

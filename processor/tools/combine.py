@@ -44,17 +44,18 @@ class Combine(BaseTool):
             self.sender_points = xys
 
         if processor.confirm:
-            raw_data_1 = np.swapaxes(self.sender_focus.raw_data[:, :, :3], 0, 1)
-            raw_data_2 = np.swapaxes(self.receiver_focus.raw_data[:, :, :3], 0, 1)
-            points_1 = self.get_face_landmarks(raw_data_1, self.detector, self.predictor)
-            points_2 = self.get_face_landmarks(raw_data_2, self.detector, self.predictor)
-            triangle_index_list = self.get_delaunay(raw_data_1, points_1)
-            triangles_1 = [(points_1[indexs[0]], points_1[indexs[1]], points_1[indexs[2]]) for indexs in triangle_index_list]
-            triangles_2 = [(points_2[indexs[0]], points_2[indexs[1]], points_2[indexs[2]]) for indexs in triangle_index_list]
-            new_pic = self.face_swap(triangles_1, triangles_2, raw_data_1, raw_data_2,
-                                     self.get_face_landmarks(raw_data_2, self.detector, self.predictor))
-            self.receiver_focus.raw_data[:, :, :3] = np.swapaxes(new_pic, 0, 1)
-            self.receiver_focus.construct_surface()
+            if self.receiver_focus is not None:
+                raw_data_1 = np.swapaxes(self.sender_focus.raw_data[:, :, :3], 0, 1)
+                raw_data_2 = np.swapaxes(self.receiver_focus.raw_data[:, :, :3], 0, 1)
+                points_1 = self.get_face_landmarks(raw_data_1, self.detector, self.predictor)
+                points_2 = self.get_face_landmarks(raw_data_2, self.detector, self.predictor)
+                triangle_index_list = self.get_delaunay(raw_data_1, points_1)
+                triangles_1 = [(points_1[indexs[0]], points_1[indexs[1]], points_1[indexs[2]]) for indexs in triangle_index_list]
+                triangles_2 = [(points_2[indexs[0]], points_2[indexs[1]], points_2[indexs[2]]) for indexs in triangle_index_list]
+                new_pic = self.face_swap(triangles_1, triangles_2, raw_data_1, raw_data_2,
+                                         self.get_face_landmarks(raw_data_2, self.detector, self.predictor))
+                self.receiver_focus.raw_data[:, :, :3] = np.swapaxes(new_pic, 0, 1)
+                self.receiver_focus.construct_surface()
             processor.REFRESH = True
             processor.PROCESS = False
 

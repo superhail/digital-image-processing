@@ -309,6 +309,21 @@ def button_initialize(button_register: Register,
     button_combine.mouseClickCallback = button_combine_callback
     button_register.register("combine", button_combine)
 
+    # snitch button
+    button_snitch = PygButton((1, 647, 38, 38),
+                               bgcolor=[80, 80, 80],
+                               fgcolor=[30, 30, 30],
+                               image_path="resources/icons/snitch.png")
+    def button_snitch_callback(event):
+        temp_button_register.set_all_invisible()
+        processor.cancel = False
+        processor.confirm = False
+        button_cancel.visible = True
+        button_confirm.visible = True
+        processor.set_process("snitch")
+    button_snitch.mouseClickCallback = button_snitch_callback
+    button_register.register("snitch", button_snitch)
+
     # file button
     button_file = PygButton((2, 2, 50, 38),
                             caption="File",

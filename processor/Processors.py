@@ -40,6 +40,7 @@ class ImageProcessor:
         self.face = Face()
         self.motion = MotionDeblur()
         self.combine = Combine(self.face.detector, self.face.predictor)
+        self.snitch = Snitch()
 
     def if_refresh(self):
         return self.REFRESH
@@ -96,6 +97,8 @@ class ImageProcessor:
                 self.motion.process(self, event)
             elif self.tool_name == "combine":
                 self.combine.process(self, event)
+            elif self.tool_name == "snitch":
+                self.snitch.process(self, event)
 
     def set_process(self, tool_name: str):
         self.draw()
