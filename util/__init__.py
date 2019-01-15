@@ -352,9 +352,15 @@ def button_initialize(button_register: Register,
         if filename is not ():
             try:
                 if processor.focus is not None:
+                    ori = processor.focus.ori_data
+                    ori_view_shape = processor.focus.ori_view_shape
+                    ori_offset = processor.focus.ori_offset
                     pixel_array = processor.focus.raw_data
+                    processor.focus.ori_data = ori
+                    processor.focus.ori_view_shape = ori_view_shape
+                    processor.focus.ori_offset = ori_offset
                     pixel_array = np.swapaxes(pixel_array, 0, 1)
-                    im = Image.fromarray(pixel_array)
+                    im = Image.fromarray(pixel_array.astype(np.uint8))
                     im = im.convert("RGB")
                     im.save(filename)
                     processor.set_process("save")

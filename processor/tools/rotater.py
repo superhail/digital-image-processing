@@ -24,6 +24,7 @@ class Rotater(BaseTool):
             processor.process_initialized = True
         if processor.confirm:
             focus = processor.focus
+            focus.ori_rotation = focus.rotation
             raw_data = focus.raw_data
             im = Image.fromarray(raw_data, "RGBA")
             rot_im = im.rotate(self.angle, expand=1, fillcolor=(80, 80, 80, 0), resample=Image.BILINEAR)

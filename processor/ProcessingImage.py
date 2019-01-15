@@ -19,6 +19,7 @@ class ImageToProcess:
         self.surface = surface
         self.construct_surface()
         self.rotation = 0
+        self.ori_rotation = 0
 
     def construct_surface(self):
         shape = self._raw_data.shape[:2]

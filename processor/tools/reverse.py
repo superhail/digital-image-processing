@@ -11,6 +11,7 @@ class Reverser(BaseTool):
         focus.raw_data = focus.ori_data
         focus.view_shape = focus.ori_view_shape
         focus.offset = focus.ori_offset
+        focus.rotation = focus.ori_rotation
         focus.construct_surface()
         processor.PROCESS = False
         processor.REFRESH = True
